@@ -112,6 +112,8 @@ public class KjConverter {
 		{"pyo","ぴょ"}
 	};
 	
+	private static final String SOKUON = "っ";
+	
 	private static final char[] CONSONANT = {'k','s','t','n','h','m','y','r','w','c','f','j','d','z','b','p'};
 	
 	private static boolean isConsonant(char c){
@@ -178,7 +180,11 @@ public class KjConverter {
 						result += mapToHiragana(temp);
 						i += temp.length();
 					} else {
-						result += c;
+						if ((i+1<input.length()) && (input.charAt(i+1)==c) && ((c=='k') ||(c=='s') || (c=='p') || (c=='t'))){
+							result += SOKUON;
+						} else {
+							result += c;
+						}
 					}
 				}
 			} else {
