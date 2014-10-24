@@ -112,7 +112,141 @@ public class KjConverter {
 		{"pyo","ぴょ"}
 	};
 	
-	private static final String SOKUON = "っ";
+	private static String[][] MAP_ROMAJI_KATA = {
+		{"a","ア"},
+		{"i","イ"},
+		{"u","ウ"},
+		{"e","エ"},
+		{"o","オ"},
+		{"ka","カ"},
+		{"ki","キ"},
+		{"ku","ク"},
+		{"ke","ケ"},
+		{"ko","コ"},
+		{"ga","ガ"},
+		{"gi","ギ"},
+		{"gu","グ"},
+		{"ge","ゲ"},
+		{"go","ゴ"},
+		{"sa","サ"},
+		{"shi","シ"},
+		{"si","シ"},
+		{"su","ス"},
+		{"se","セ"},
+		{"so","ソ"},
+		{"za","ザ"},
+		{"zi","ジ"},
+		{"ji","ジ"},
+		{"zu","ズ"},
+		{"ze","ゼ"},
+		{"zo","ゾ"},
+		{"ta","タ"},
+		{"chi","チ"},
+		{"ti","チ"},
+		{"tsu","ツ"},
+		{"tu","ツ"},
+		{"te","テ"},
+		{"to","ト"},
+		{"da","ダ"},
+		{"di","ヂ"},
+		{"du","ヅ"},
+		{"de","デ"},
+		{"do","ド"},
+		{"na","ナ"},
+		{"ni","ニ"},
+		{"nu","ヌ"},
+		{"ne","ネ"},
+		{"no","ノ"},
+		{"ha","ハ"},
+		{"hi","ヒ"},
+		{"hu","フ"},
+		{"fu","フ"},
+		{"he","ヘ"},
+		{"ho","ホ"},
+		{"ba","バ"},
+		{"bi","ビ"},
+		{"bu","ブ"},
+		{"be","ベ"},
+		{"bo","ボ"},
+		{"pa","パ"},
+		{"pi","ピ"},
+		{"pu","プ"},
+		{"pe","ペ"},
+		{"po","ポ"},
+		{"ma","マ"},
+		{"mi","ミ"},
+		{"mu","ム"},
+		{"me","メ"},
+		{"mo","モ"},
+		{"ya","ヤ"},
+		{"yu","ユ"},
+		{"yo","ヨ"},
+		{"ra","ラ"},
+		{"ri","リ"},
+		{"ru","ル"},
+		{"re","レ"},
+		{"ro","ロ"},
+		{"wa","ワ"},
+		{"wo","ヲ"},
+		{"n","ン"},
+		{"kya","キャ"},
+		{"kyu","キュ"},
+		{"kyo","キョ"},
+		{"sha","シャ"},
+		{"shu","シュ"},
+		{"sho","ショ"},
+		{"cha","チャ"},
+		{"chu","チュ"},
+		{"cho","チョ"},
+		{"nya","ニャ"},
+		{"nyu","ニュ"},
+		{"nyo","ニョ"},
+		{"hya","ヒャ"},
+		{"hyu","ヒュ"},
+		{"hyo","ヒョ"},
+		{"mya","ミャ"},
+		{"myu","ミュ"},
+		{"myo","ミョ"},
+		{"rya","リャ"},
+		{"ryu","リュ"},
+		{"ryo","リョ"},
+		{"gya","ギャ"},
+		{"gyu","ギュ"},
+		{"gyo","ギョ"},
+		{"ja","ジャ"},
+		{"ju","ジュ"},
+		{"jo","ジョ"},
+		{"bya","ビャ"},
+		{"byu","ビュ"},
+		{"byo","ビョ"},
+		{"pya","ピャ"},
+		{"pyu","ピュ"},
+		{"pyo","ピョ"},
+		{"-","ー"},
+		{"wi","ウィ"},
+		{"we","ウェ"},
+		//{"ウォ",""},
+		{"she","シェ"},
+		{"je","ジェ"},
+		{"che","チェ"},
+		{"tsa","ツァ"},
+		{"tse","ツェ"},
+		{"tso","ツォ"},
+		{"tyi","チィ"},
+		{"dyi","ヂィ"},
+		{"dyu","ヂュ"},
+		//{"tyu",""},
+		//{"dyu",""},
+		{"fa","ファ"},
+		{"fi","フィ"},
+		{"fyu","フュ"},
+		{"fe","フェ"},
+		{"fo","フォ"}
+	};
+	
+	
+	private static final String SOKUON_HIRA = "っ";
+	private static final String SOKUON_KATA = "ッ";
 	
 	private static final char[] CONSONANT = {'k','s','t','n','h','m','y','r','w','c','f','j','d','z','b','p'};
 	
@@ -134,7 +268,7 @@ public class KjConverter {
 		return "";
 	}
 	
-	private static String getLongestWord(String input, int startPos){
+	private static String getLongestHiraWord(String input, int startPos){
 		String result = "";
 		if ((startPos>=input.length()) || (startPos<0)){
 			return result;
@@ -166,7 +300,7 @@ public class KjConverter {
 					} else if (i+1 == input.length()){
 						result += 'n';
 					} else {
-						String temp = getLongestWord(input,i);
+						String temp = getLongestHiraWord(input,i);
 						if (temp.length()>0){
 							result += mapToHiragana(temp);
 							i += temp.length();
@@ -175,22 +309,97 @@ public class KjConverter {
 						}
 					}
 				} else {
-					String temp = getLongestWord(input,i);
+					String temp = getLongestHiraWord(input,i);
 					if (temp.length()>0){
 						result += mapToHiragana(temp);
 						i += temp.length();
 					} else {
 						if ((i+1<input.length()) && (input.charAt(i+1)==c) && ((c=='k') ||(c=='s') || (c=='p') || (c=='t'))){
-							result += SOKUON;
+							result += SOKUON_HIRA;
 						} else {
 							result += c;
 						}
 					}
 				}
 			} else {
-				String temp = getLongestWord(input,i);
+				String temp = getLongestHiraWord(input,i);
 				if (temp.length()>0){
 					result += mapToHiragana(temp);
+					i += temp.length();
+				} else {
+					result += c;
+				}
+			}
+		}
+		return result;
+	}
+	
+	private static String mapToKatakana(String word){
+		for(int i=0;i<MAP_ROMAJI_KATA.length;i++){
+			if (word.equalsIgnoreCase(MAP_ROMAJI_KATA[i][0])){
+				return MAP_ROMAJI_KATA[i][1];
+			}
+		}
+		return "";
+	}
+	
+	private static String getLongestKataWord(String input, int startPos){
+		String result = "";
+		if ((startPos>=input.length()) || (startPos<0)){
+			return result;
+		}
+		
+		for(int i=0;i<MAP_ROMAJI_KATA.length;i++){
+			if (startPos + MAP_ROMAJI_KATA[i][0].length() <= input.length()){
+				if (input.substring(startPos, startPos + MAP_ROMAJI_KATA[i][0].length()).equalsIgnoreCase(MAP_ROMAJI_KATA[i][0])){
+					if (result.length() < MAP_ROMAJI_KATA[i][0].length()){
+						result = MAP_ROMAJI_KATA[i][0];
+					}
+				}
+			}
+		}
+		
+		return result;
+	}
+	
+	public static String convertToKatakana(String input){
+		String result = "";
+		for(int i=0;i<input.length();i++){
+			char c = input.charAt(i);
+			if (isConsonant(c)){
+				if (c=='n'){
+					if ((i+2 == input.length()) 
+							&& ((input.charAt(i+1) == 'n') || (input.charAt(i+1) == '\''))){ 	// string ends by "nn" or "n'"
+						result += mapToKatakana("n");
+						i++; 
+					} else if (i+1 == input.length()){
+						result += 'n';
+					} else {
+						String temp = getLongestKataWord(input,i);
+						if (temp.length()>0){
+							result += mapToKatakana(temp);
+							i += temp.length();
+						} else {
+							result += c;
+						}
+					}
+				} else {
+					String temp = getLongestKataWord(input,i);
+					if (temp.length()>0){
+						result += mapToKatakana(temp);
+						i += temp.length();
+					} else {
+						if ((i+1<input.length()) && (input.charAt(i+1)==c)){
+							result += SOKUON_KATA;
+						} else {
+							result += c;
+						}
+					}
+				}
+			} else {
+				String temp = getLongestKataWord(input,i);
+				if (temp.length()>0){
+					result += mapToKatakana(temp);
 					i += temp.length();
 				} else {
 					result += c;
