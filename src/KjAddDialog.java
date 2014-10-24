@@ -9,6 +9,8 @@ import javax.swing.JTextField;
 import javax.swing.JLabel;
 import java.awt.Font;
 import javax.swing.SwingConstants;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 
 
 public class KjAddDialog extends JDialog {
@@ -51,6 +53,40 @@ public class KjAddDialog extends JDialog {
 		kanjiTextField.setColumns(10);
 		
 		kunyomiTextField = new JTextField();
+		kunyomiTextField.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyTyped(KeyEvent e) {
+				switch (e.getKeyCode()){
+				case KeyEvent.VK_BACK_SPACE:
+					//kanjiTextField.setText("BACKSPACE PRESSED");
+					e.consume();
+					break;
+				default:
+					e.consume();
+					break;
+				}
+				
+				
+			}
+			@Override
+			public void keyPressed(KeyEvent e) {
+				String text;
+				//kanjiTextField.setText(String.valueOf((int)e.getKeyChar()) + "_" + String.valueOf(e.getKeyCode()) + "_" + String.valueOf(KeyEvent.VK_BACK_SPACE));
+				if ((!e.isControlDown()) && (!e.isAltDown())){
+					switch (e.getKeyCode()){
+					case KeyEvent.VK_BACK_SPACE:
+					
+						break;
+					default:
+						//kanjiTextField.setText("BACKSPACE PRESSED");
+						text = kunyomiTextField.getText() + e.getKeyChar();
+						kunyomiTextField.setText(KjConverter.convertToHiragana(text));
+						e.consume();
+						break;
+					}
+				}
+			}
+		});
 		kunyomiTextField.setFont(new Font("MS Mincho", Font.PLAIN, 16));
 		kunyomiTextField.setBounds(27, 122, 139, 34);
 		contentPanel.add(kunyomiTextField);
