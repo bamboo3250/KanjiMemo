@@ -15,6 +15,7 @@ import javax.swing.JLabel;
 
 public class KjKanjiComparator extends JDialog {
 
+	private static final int MAXIMUM_DIFFERENCE = 10;
 	private final JPanel contentPanel = new JPanel();
 	private KjDrawingPanel drawingPanel2;
 	private KjDrawingPanel drawingPanel1;
@@ -81,7 +82,7 @@ public class KjKanjiComparator extends JDialog {
 				@Override
 				public void mouseClicked(MouseEvent e) {
 					double result = compareKanji(drawingPanel1.getSimplified(),drawingPanel2.getSimplified()); 
-					if (result<20){
+					if (result<MAXIMUM_DIFFERENCE){
 						lblResult.setText("O");
 						lblDifference.setText("" + result);
 					} else {
@@ -172,7 +173,7 @@ public class KjKanjiComparator extends JDialog {
 				}
 			}
 			difference = difference/numStrokes;
-			if (difference<10){
+			if (difference<MAXIMUM_DIFFERENCE){
 				//return true;
 				return difference;
 			} else {
