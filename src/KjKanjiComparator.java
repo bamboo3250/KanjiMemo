@@ -172,7 +172,7 @@ public class KjKanjiComparator extends JDialog {
 				}
 			}
 			difference = difference/numStrokes;
-			if (difference<20){
+			if (difference<10){
 				//return true;
 				return difference;
 			} else {
