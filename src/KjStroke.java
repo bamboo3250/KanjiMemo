@@ -35,7 +35,7 @@ public class KjStroke {
 	
 	public KjStroke getSimplified(){
 		KjStroke result = new KjStroke();
-		KjStroke reduced = this;//getReducedNoise();
+		KjStroke reduced = getReducedNoise();
 		
 		if (reduced.size()<=2){
 			for(int i=0;i<reduced.size();i++){
@@ -63,10 +63,10 @@ public class KjStroke {
 						}
 					}
 					p2 = reduced.getPoint(maxJ);
-					double angle1 = Math.atan2(p2.y-p3.y, p2.x-p3.x);
-					double angle2 = Math.atan2(p1.y-p2.y, p1.x-p2.x);
-					double angle = angle2 - angle1;
-					if (Math.abs(Math.toDegrees(angle))>70){
+					double angle1 = Math.abs(Math.atan2(p2.y-p3.y, p2.x-p3.x));
+					double angle2 = Math.abs(Math.atan2(p1.y-p2.y, p1.x-p2.x));
+					double angle = Math.toDegrees(Math.abs(angle2 - angle1));
+					if (angle>60){
 						i3 = i;
 						result.addPoint(p2);
 					}
@@ -74,10 +74,10 @@ public class KjStroke {
 			}
 			result.addPoint(reduced.getPoint(reduced.size()-1));
 		}
-		if (result.size()!=this.size()){
-			return result.getSimplified2();
-		}
-		return result;
+		//if (result.size()!=this.size()){
+			return result;//.getSimplified2();
+		//}
+		//return result;
 	}
 	
 	public KjStroke getSimplified2(){
@@ -94,14 +94,14 @@ public class KjStroke {
 			int i3 = 0;
 			Point p1, p2, p3;
 			for(int i=1;i<this.size()-1;i++){
-				p2 = this.getPoint(i);
 				p1 = this.getPoint(i+1);
+				p2 = this.getPoint(i);
 				p3 = this.getPoint(i3);
 				
-				double angle1 = Math.atan2(p2.y-p3.y, p2.x-p3.x);
-				double angle2 = Math.atan2(p1.y-p2.y, p1.x-p2.x);
-				double angle = angle2 - angle1;
-				if (Math.abs(Math.toDegrees(angle))>70){
+				double angle1 = Math.abs(Math.atan2(p2.y-p3.y, p2.x-p3.x));
+				double angle2 = Math.abs(Math.atan2(p1.y-p2.y, p1.x-p2.x));
+				double angle = Math.toDegrees(Math.abs(angle2 - angle1));
+				if (angle>60){
 					i3 = i;
 					result.addPoint(p2);
 				}
