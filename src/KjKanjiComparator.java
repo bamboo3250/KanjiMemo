@@ -144,7 +144,7 @@ public class KjKanjiComparator extends JDialog {
 		}
 	}
 
-	protected double compareKanji(ArrayList<KjStroke> word1, ArrayList<KjStroke> word2) {
+	public double compareKanji(ArrayList<KjStroke> word1, ArrayList<KjStroke> word2) {
 		double difference = 0;
 		
 		if (word1.size()!=word2.size()){
