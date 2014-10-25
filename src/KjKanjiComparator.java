@@ -88,7 +88,7 @@ public class KjKanjiComparator extends JDialog {
 					if (result<MAXIMUM_DIFFERENCE){
 						lblResult.setText("CORRECT");
 						lblDifference.setText("" + result);
-					} else if (result<MAXIMUM_DIFFERENCE*2){
+					} else if (result<MAXIMUM_DIFFERENCE*1.5){
 						lblResult.setText("ALMOST");
 						lblDifference.setText("" + result);
 					} else {
