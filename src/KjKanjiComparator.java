@@ -11,6 +11,8 @@ import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 
 import javax.swing.JLabel;
+import java.awt.Font;
+import javax.swing.SwingConstants;
 
 
 public class KjKanjiComparator extends JDialog {
@@ -40,7 +42,7 @@ public class KjKanjiComparator extends JDialog {
 	 * Create the dialog.
 	 */
 	public KjKanjiComparator() {
-		setBounds(100, 100, 450, 300);
+		setBounds(100, 100, 503, 300);
 		getContentPane().setLayout(new BorderLayout());
 		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
 		getContentPane().add(contentPanel, BorderLayout.CENTER);
@@ -52,7 +54,7 @@ public class KjKanjiComparator extends JDialog {
 		}
 		{
 			drawingPanel2 = new KjDrawingPanel();
-			drawingPanel2.setBounds(244, 11, 180, 180);
+			drawingPanel2.setBounds(297, 11, 180, 180);
 			contentPanel.add(drawingPanel2);
 		}
 		{
@@ -74,7 +76,7 @@ public class KjKanjiComparator extends JDialog {
 					drawingPanel2.clearCanvas();
 				}
 			});
-			btnClear2.setBounds(355, 194, 69, 23);
+			btnClear2.setBounds(408, 194, 69, 23);
 			contentPanel.add(btnClear2);
 		}
 		{
@@ -84,20 +86,25 @@ public class KjKanjiComparator extends JDialog {
 				public void mouseClicked(MouseEvent e) {
 					double result = compareKanji(drawingPanel1.getSimplified(),drawingPanel2.getSimplified()); 
 					if (result<MAXIMUM_DIFFERENCE){
-						lblResult.setText("O");
+						lblResult.setText("CORRECT");
+						lblDifference.setText("" + result);
+					} else if (result<MAXIMUM_DIFFERENCE*2){
+						lblResult.setText("ALMOST");
 						lblDifference.setText("" + result);
 					} else {
-						lblResult.setText("X");
+						lblResult.setText("WRONG");
 						lblDifference.setText("" + result);
 					}
 				}
 			});
-			btnCompare.setBounds(172, 202, 89, 23);
+			btnCompare.setBounds(199, 194, 89, 23);
 			contentPanel.add(btnCompare);
 		}
 		{
 			lblResult = new JLabel("Result");
-			lblResult.setBounds(200, 79, 46, 14);
+			lblResult.setHorizontalAlignment(SwingConstants.CENTER);
+			lblResult.setFont(new Font("Tahoma", Font.PLAIN, 18));
+			lblResult.setBounds(200, 79, 87, 14);
 			contentPanel.add(lblResult);
 		}
 		{
@@ -113,7 +120,7 @@ public class KjKanjiComparator extends JDialog {
 		}
 		{
 			JButton btnUndo2 = new JButton("Undo");
-			btnUndo2.setBounds(281, 194, 69, 23);
+			btnUndo2.setBounds(334, 194, 69, 23);
 			btnUndo2.addMouseListener(new MouseAdapter() {
 				@Override
 				public void mouseClicked(MouseEvent e) {
@@ -124,7 +131,8 @@ public class KjKanjiComparator extends JDialog {
 		}
 		{
 			lblDifference = new JLabel("Difference");
-			lblDifference.setBounds(200, 108, 46, 14);
+			lblDifference.setHorizontalAlignment(SwingConstants.CENTER);
+			lblDifference.setBounds(200, 108, 87, 14);
 			contentPanel.add(lblDifference);
 		}
 		{
