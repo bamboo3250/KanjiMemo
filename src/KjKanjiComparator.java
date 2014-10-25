@@ -28,6 +28,7 @@ public class KjKanjiComparator extends JDialog {
 	public static void main(String[] args) {
 		try {
 			KjKanjiComparator dialog = new KjKanjiComparator();
+			dialog.setTitle("Compare Kanji");
 			dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 			dialog.setVisible(true);
 		} catch (Exception e) {
