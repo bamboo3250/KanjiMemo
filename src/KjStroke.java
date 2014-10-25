@@ -63,9 +63,10 @@ public class KjStroke {
 						}
 					}
 					p2 = reduced.getPoint(maxJ);
-					double angle1 = Math.abs(Math.atan2(p2.y-p3.y, p2.x-p3.x));
-					double angle2 = Math.abs(Math.atan2(p1.y-p2.y, p1.x-p2.x));
-					double angle = Math.toDegrees(Math.abs(angle2 - angle1));
+					double angle1 = Math.atan2(p2.y-p3.y, p2.x-p3.x);
+					double angle2 = Math.atan2(p1.y-p2.y, p1.x-p2.x);
+					double angle = Math.abs(Math.toDegrees(angle2 - angle1));
+					angle = Math.min(angle, 360-angle);
 					if (angle>60){
 						i3 = i;
 						result.addPoint(p2);
