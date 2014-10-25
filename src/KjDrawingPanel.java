@@ -132,12 +132,11 @@ class KjDrawingPanel extends JPanel {
 		    	g.setColor(Color.white);
 		    	g.fillRect(0, 0, this.getWidth(), this.getHeight());
 		    	drawCross(g);
-		    	drawRawAndSimplifiedStroke();
+		    	drawRawAndSimplifiedStroke(g);
 			}
 		}
 		
-	    private void drawRawAndSimplifiedStroke() {
-	    	Graphics g = this.getGraphics();
+	    private void drawRawAndSimplifiedStroke(Graphics g) {
 	    	for(int i=0;i<strokeList.size();i++){
 	    		g.setColor(Color.BLACK);
 	    		for(int j=0;j<strokeList.get(i).size()-1;j++){
@@ -174,6 +173,7 @@ class KjDrawingPanel extends JPanel {
 	        //g.setColor(Color.BLACK);
 	        //g.drawRect(squareX,squareY,squareW,squareH);
 	        drawCross(g);
+	        drawRawAndSimplifiedStroke(g);
 	    }
 
 		private void drawCross(Graphics g) {
