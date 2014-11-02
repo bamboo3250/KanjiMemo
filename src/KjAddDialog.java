@@ -125,12 +125,18 @@ public class KjAddDialog extends JDialog {
 				
 				String[] kunList = kunyomiTextField.getText().split(",");
 				for(int i=0;i<kunList.length;i++){
-					newKanji.addKunyomi(kunList[i].trim());
+					String word = kunList[i].trim();
+					if (!word.equals("")){
+						newKanji.addKunyomi(word);
+					}
 				}
 				
 				String[] onList = onyomiTextField.getText().split(",");
 				for(int i=0;i<onList.length;i++){
-					newKanji.addOnyomi(onList[i].trim());
+					String word = onList[i].trim();
+					if (!word.equals("")){
+						newKanji.addOnyomi(word);
+					}
 				}
 				KjStorage.getInstance().addKanji(newKanji);
 				KjMyKanjiScene.getInstance().updateList();

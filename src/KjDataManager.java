@@ -100,85 +100,7 @@ public class KjDataManager {
 				int numWord = rd.read(4);
 				try {
 					for (int i = 0; i < numWord; i++){
-						KjKanji temp = new KjKanji();
-						//int numAttribute = rd.read(1);
-						
-						//for(int j = 0; j < numAttribute; j++) {
-						int typeAtt;
-						do {
-							typeAtt = rd.read(1);
-							int length, num, numPoint;
-							ArrayList<KjStroke> strokeList;
-							// 0: present string
-							// 1: kunyomi list
-							// 2: onyomi list
-							// 3: raw strokes
-							// 4: simplified strokes
-							// 5: total answer
-							// 6: correct answer
-							// 7: id
-							
-							switch(typeAtt) {
-							case 0:
-								length = rd.read(1);
-								temp.setPresentString(rd.readJapString(length));
-								break;
-							case 1:
-								num = rd.read(1);
-								for(int k=0;k<num;k++){
-									length = rd.read(1);
-									temp.addKunyomi(rd.readJapString(length));
-								}
-								break;
-							case 2:
-								num = rd.read(1);
-								for(int k=0;k<num;k++){
-									length = rd.read(1);
-									temp.addOnyomi(rd.readJapString(length));
-								}
-								break;
-							case 3:
-								num = rd.read(1);
-								strokeList = new ArrayList<KjStroke>();
-								for(int k=0;k<num;k++){
-									numPoint = rd.read(2);
-									KjStroke stroke = new KjStroke();
-									for(int l=0;l<numPoint;l++){
-										int x = rd.read(1);
-										int y = rd.read(1);
-										stroke.addPoint(new Point(x,y));
-									}
-									strokeList.add(stroke);
-								}
-								temp.setRawStrokeList(strokeList);
-								break;
-							case 4:
-								num = rd.read(1);
-								strokeList = new ArrayList<KjStroke>();
-								for(int k=0;k<num;k++){
-									numPoint = rd.read(2);
-									KjStroke stroke = new KjStroke();
-									for(int l=0;l<numPoint;l++){
-										int x = rd.read(1);
-										int y = rd.read(1);
-										stroke.addPoint(new Point(x,y));
-									}
-									strokeList.add(stroke);
-								}
-								temp.setSimplifiedStrokeList(strokeList);
-								break;
-							case 5:
-								temp.setTotalAnswer(rd.read(3));
-								break;
-							case 6:
-								temp.setCorrectAnswer(rd.read(3));
-								break;
-							case 7:
-								temp.setId(rd.read(2));
-								break;
-							}
-						} while (typeAtt!=255);
-						
+						KjKanji temp = readKanji(rd);
 						KjStorage.getInstance().addKanji(temp);
 					}
 				}
@@ -194,5 +116,87 @@ public class KjDataManager {
 			KjBinaryWriter write = new KjBinaryWriter(VOCABULARY_FILE_NAME);
 			write.close();
 		}
+	}
+
+	private static KjKanji readKanji(KjBinaryReader rd) throws IOException {
+		KjKanji temp = new KjKanji();
+		//int numAttribute = rd.read(1);
+		
+		//for(int j = 0; j < numAttribute; j++) {
+		int typeAtt;
+		do {
+			typeAtt = rd.read(1);
+			int length, num, numPoint;
+			ArrayList<KjStroke> strokeList;
+			// 0: present string
+			// 1: kunyomi list
+			// 2: onyomi list
+			// 3: raw strokes
+			// 4: simplified strokes
+			// 5: total answer
+			// 6: correct answer
+			// 7: id
+			
+			switch(typeAtt) {
+			case 0:
+				length = rd.read(1);
+				temp.setPresentString(rd.readJapString(length));
+				break;
+			case 1:
+				num = rd.read(1);
+				for(int k=0;k<num;k++){
+					length = rd.read(1);
+					temp.addKunyomi(rd.readJapString(length));
+				}
+				break;
+			case 2:
+				num = rd.read(1);
+				for(int k=0;k<num;k++){
+					length = rd.read(1);
+					temp.addOnyomi(rd.readJapString(length));
+				}
+				break;
+			case 3:
+				num = rd.read(1);
+				strokeList = new ArrayList<KjStroke>();
+				for(int k=0;k<num;k++){
+					numPoint = rd.read(2);
+					KjStroke stroke = new KjStroke();
+					for(int l=0;l<numPoint;l++){
+						int x = rd.read(1);
+						int y = rd.read(1);
+						stroke.addPoint(new Point(x,y));
+					}
+					strokeList.add(stroke);
+				}
+				temp.setRawStrokeList(strokeList);
+				break;
+			case 4:
+				num = rd.read(1);
+				strokeList = new ArrayList<KjStroke>();
+				for(int k=0;k<num;k++){
+					numPoint = rd.read(2);
+					KjStroke stroke = new KjStroke();
+					for(int l=0;l<numPoint;l++){
+						int x = rd.read(1);
+						int y = rd.read(1);
+						stroke.addPoint(new Point(x,y));
+					}
+					strokeList.add(stroke);
+				}
+				temp.setSimplifiedStrokeList(strokeList);
+				break;
+			case 5:
+				temp.setTotalAnswer(rd.read(3));
+				break;
+			case 6:
+				temp.setCorrectAnswer(rd.read(3));
+				break;
+			case 7:
+				temp.setId(rd.read(2));
+				break;
+			}
+		} while (typeAtt!=255);
+		return temp;
 	}
 }
