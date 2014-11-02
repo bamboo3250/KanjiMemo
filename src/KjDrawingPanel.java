@@ -5,6 +5,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 class KjDrawingPanel extends JPanel {
@@ -15,18 +16,17 @@ class KjDrawingPanel extends JPanel {
 	    private ArrayList<KjStroke> simplifiedStrokeList = new ArrayList<KjStroke>();
 	    private KjStroke currentStroke;
 	    private int numStrokes = 0;
-		
+	    private JLabel lblStrokes = new JLabel("Stroke(s): 0");
 	    
 	    public KjDrawingPanel() {
 	    	setBackground(Color.WHITE);
-			
-	    	
 			
 	        addMouseListener(new MouseAdapter() {
 	            public void mousePressed(MouseEvent e) {
 	            	startX = e.getX();
 		            startY = e.getY();
 		            currentStroke = new KjStroke();
+		            currentStroke.addPoint(new Point(Math.min(255, e.getX()),Math.min(255, e.getY())));
 	            }
 	            
 	            public void mouseReleased(MouseEvent e) {
@@ -40,27 +40,49 @@ class KjDrawingPanel extends JPanel {
 
 	        addMouseMotionListener(new MouseAdapter() {
 	            public void mouseDragged(MouseEvent e) {
-	            	currentStroke.addPoint(new Point(e.getX(),e.getY()));
-	            	moveSquare(e.getX(),e.getY());
+	            	currentStroke.addPoint(new Point(Math.min(255, e.getX()),Math.min(255, e.getY())));
+	            	moveSquare(Math.min(255, e.getX()),Math.min(255, e.getY()));
 	            }
 	        });
 	        
 	    }
 	    
+	    public JLabel getStrokeLabel(){
+	    	return lblStrokes;
+	    }
+	    
+	    public void setStrokeLabel(int numStrokes){
+			lblStrokes.setText("Stroke(s): " + numStrokes);
+		}
+	    
 	    public ArrayList<KjStroke> getSimplified(){
 	    	return simplifiedStrokeList;
 	    }
 	    
+	    public ArrayList<KjStroke> getRawStroke(){
+	    	return strokeList;
+	    }
+	    
+	    public void setSimplified(ArrayList<KjStroke> strokeList){
+	    	simplifiedStrokeList = strokeList;
+	    }
+	    
+	    public void setRawStroke(ArrayList<KjStroke> strokeList){
+	    	this.strokeList = strokeList;
+	    	numStrokes = strokeList.size();
+	    }
+	    
 	    public void increaseNumStroke(){
 			numStrokes++;
-			KjAddDialog.getInstance().setStrokeLabel(numStrokes);
+			setStrokeLabel(numStrokes);
+			currentStroke = currentStroke.removeSamePoint();
 			currentStroke.setOrder(numStrokes);
 			strokeList.add(currentStroke);
 		}
 		
 		public void resetNumStroke(){
 			numStrokes = 0;
-			KjAddDialog.getInstance().setStrokeLabel(numStrokes);
+			setStrokeLabel(numStrokes);
 			strokeList.clear();
 			simplifiedStrokeList.clear();
 		}
@@ -127,6 +149,7 @@ class KjDrawingPanel extends JPanel {
 				numStrokes--;
 				strokeList.remove(strokeList.size()-1);
 				simplifiedStrokeList.remove(simplifiedStrokeList.size()-1);
+				setStrokeLabel(numStrokes);
 				
 				Graphics g = this.getGraphics();
 		    	g.setColor(Color.white);
@@ -174,6 +197,7 @@ class KjDrawingPanel extends JPanel {
 	        //g.drawRect(squareX,squareY,squareW,squareH);
 	        drawCross(g);
 	        drawRawAndSimplifiedStroke(g);
+	        setStrokeLabel(this.strokeList.size());
 	    }
 
 		private void drawCross(Graphics g) {
@@ -184,9 +208,11 @@ class KjDrawingPanel extends JPanel {
 	    
 	    public void clearCanvas(){
 	    	Graphics g = this.getGraphics();
-	    	g.setColor(Color.white);
-	    	g.fillRect(0, 0, this.getWidth(), this.getHeight());
-	    	drawCross(g);
-	    	resetNumStroke();
+	    	if (g!=null){
+		    	g.setColor(Color.white);
+		    	g.fillRect(0, 0, this.getWidth(), this.getHeight());
+		    	drawCross(g);
+		    	resetNumStroke();
+	    	}
 	    }
 	}

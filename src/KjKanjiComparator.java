@@ -17,7 +17,7 @@ import javax.swing.SwingConstants;
 
 public class KjKanjiComparator extends JDialog {
 
-	private static final int MAXIMUM_DIFFERENCE = 15;
+	public static final int MAXIMUM_DIFFERENCE = 20;
 	private final JPanel contentPanel = new JPanel();
 	private KjDrawingPanel drawingPanel2;
 	private KjDrawingPanel drawingPanel1;
@@ -153,7 +153,7 @@ public class KjKanjiComparator extends JDialog {
 		}
 	}
 
-	public double compareKanji(ArrayList<KjStroke> word1, ArrayList<KjStroke> word2) {
+	public static double compareKanji(ArrayList<KjStroke> word1, ArrayList<KjStroke> word2) {
 		
 		
 		if (word1.size()!=word2.size()){
@@ -166,7 +166,7 @@ public class KjKanjiComparator extends JDialog {
 			for(int i=0;i<numStrokes;i++){
 				if (word1.get(i).size() != word2.get(i).size()){
 					//return false;
-					return 9999;
+					return 990000 + word1.get(i).size()*100 + word2.get(i).size();
 				} else {
 					double differenceInStroke = 0;
 					int numPointsOfStroke = word2.get(i).size();

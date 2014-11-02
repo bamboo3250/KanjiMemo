@@ -1,5 +1,6 @@
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
+
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JPanel;
@@ -11,50 +12,40 @@ import java.awt.Font;
 
 import javax.swing.SwingConstants;
 
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
-
 public class KjAddDialog extends JDialog {
-
-	private static KjAddDialog addDialog;
 	
+	private KjAddDialog addDialog;
 	private final JPanel contentPanel = new JPanel();
 	private JTextField kanjiTextField;
 	private JTextField kunyomiTextField;
 	private JTextField onyomiTextField;
 	private KjDrawingPanel drawingPanel;
-	private JLabel lblStrokes;
-	
-	
-	
 	
 	/**
 	 * Launch the application.
 	 */
 	public static void main(String[] args) {
 		try {
-			KjAddDialog dialog = KjAddDialog.getInstance();
+			KjAddDialog dialog = new KjAddDialog();//.getInstance();
 			dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 			dialog.setVisible(true);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
-
-	public static KjAddDialog getInstance(){
-		if (addDialog==null){
-			addDialog = new KjAddDialog();
-		}
-		return addDialog;
-	}
 	
 	/**
 	 * Create the dialog.
 	 */
-	private KjAddDialog() {
+	public KjAddDialog() {
+		
+		addDialog = this;
+		setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+		setModalityType(JDialog.ModalityType.APPLICATION_MODAL );
+		
 		setResizable(false);
 		setTitle("Add a new Kanji");
 		setBounds(100, 100, 450, 300);
@@ -94,13 +85,19 @@ public class KjAddDialog extends JDialog {
 		lblDrawKanjiHere.setBounds(242, 7, 101, 14);
 		contentPanel.add(lblDrawKanjiHere);
 		
-		lblStrokes = new JLabel("Stroke(s): 0");
+		JLabel lblStrokes = drawingPanel.getStrokeLabel();
 		lblStrokes.setBounds(242, 213, 129, 14);
 		contentPanel.add(lblStrokes);
-	}
-	
-	public void setStrokeLabel(int numStrokes){
-		lblStrokes.setText("Stroke(s): " + numStrokes);
+		
+		JButton btnUndo = new JButton("Undo");
+		btnUndo.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent arg0) {
+				drawingPanel.undo();
+			}
+		});
+		btnUndo.setBounds(359, 211, 75, 23);
+		contentPanel.add(btnUndo);
 	}
 	
 	private void createButtonPanel() {
@@ -118,12 +115,41 @@ public class KjAddDialog extends JDialog {
 		buttonPane.add(btnNewButton);
 		
 		JButton okButton = new JButton("OK");
-		okButton.setActionCommand("OK");
+		okButton.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				KjKanji newKanji = new KjKanji();
+				newKanji.setPresentString(kanjiTextField.getText());
+				newKanji.setRawStrokeList(drawingPanel.getRawStroke());
+				newKanji.setSimplifiedStrokeList(drawingPanel.getSimplified());
+				
+				String[] kunList = kunyomiTextField.getText().split(",");
+				for(int i=0;i<kunList.length;i++){
+					newKanji.addKunyomi(kunList[i].trim());
+				}
+				
+				String[] onList = onyomiTextField.getText().split(",");
+				for(int i=0;i<onList.length;i++){
+					newKanji.addOnyomi(onList[i].trim());
+				}
+				KjStorage.getInstance().addKanji(newKanji);
+				KjMyKanjiScene.getInstance().updateList();
+				KjMyKanjiScene.getInstance().selectTheLast();
+				addDialog.dispose();
+			}
+		});
+		//okButton.setActionCommand("OK");
 		buttonPane.add(okButton);
 		getRootPane().setDefaultButton(okButton);
 	
 		JButton cancelButton = new JButton("Cancel");
-		cancelButton.setActionCommand("Cancel");
+		cancelButton.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				addDialog.dispose();
+			}
+		});
+		//cancelButton.setActionCommand("Cancel");
 		buttonPane.add(cancelButton);
 	}
 
@@ -135,103 +161,17 @@ public class KjAddDialog extends JDialog {
 		contentPanel.add(kanjiTextField);
 		kanjiTextField.setColumns(10);
 		
-		kunyomiTextField = new JTextField();
-		kunyomiTextField.addKeyListener(new KeyAdapter() {
-			@Override
-			public void keyPressed(KeyEvent e) {
-				//onyomiTextField.setText("Typed " + (int) e.getKeyChar() + " " +e.getKeyCode() + " " + KeyEvent.VK_RIGHT);
-				if ((!e.isControlDown()) && (!e.isAltDown())){
-					char c = e.getKeyChar();
-					if (('a'<=c) && (c<='z')){
-						c = (char) (c - 'a' + 'A');
-					}
-					switch (c){
-					case KeyEvent.VK_A: case KeyEvent.VK_B: case KeyEvent.VK_C: case KeyEvent.VK_D: case KeyEvent.VK_E: 
-					case KeyEvent.VK_F: case KeyEvent.VK_G: case KeyEvent.VK_H: case KeyEvent.VK_I: case KeyEvent.VK_J: 
-					case KeyEvent.VK_K: case KeyEvent.VK_L: case KeyEvent.VK_M: case KeyEvent.VK_N: case KeyEvent.VK_O: 
-					case KeyEvent.VK_P: case KeyEvent.VK_Q: case KeyEvent.VK_R: case KeyEvent.VK_S: case KeyEvent.VK_T: 
-					case KeyEvent.VK_U: case KeyEvent.VK_V: case KeyEvent.VK_W: case KeyEvent.VK_X: case KeyEvent.VK_Y: 
-					case KeyEvent.VK_Z: case KeyEvent.VK_RIGHT: 
-						String text = kunyomiTextField.getText() + e.getKeyChar();
-						kunyomiTextField.setText(KjConverter.convertToHiragana(text.toLowerCase()));
-						e.consume();
-						break;
-					}
-				}
-			}
-			
-			@Override
-			public void keyTyped(KeyEvent e) {
-				//onyomiTextField.setText("Typed " + (int) e.getKeyChar() + " " +e.getKeyCode() + " " + KeyEvent.VK_RIGHT);
-				if ((!e.isControlDown()) && (!e.isAltDown())){
-					char c = e.getKeyChar();
-					if (('a'<=c) && (c<='z')){
-						c = (char) (c - 'a' + 'A');
-					}
-					switch (c){
-					case KeyEvent.VK_A: case KeyEvent.VK_B: case KeyEvent.VK_C: case KeyEvent.VK_D: case KeyEvent.VK_E: 
-					case KeyEvent.VK_F: case KeyEvent.VK_G: case KeyEvent.VK_H: case KeyEvent.VK_I: case KeyEvent.VK_J: 
-					case KeyEvent.VK_K: case KeyEvent.VK_L: case KeyEvent.VK_M: case KeyEvent.VK_N: case KeyEvent.VK_O: 
-					case KeyEvent.VK_P: case KeyEvent.VK_Q: case KeyEvent.VK_R: case KeyEvent.VK_S: case KeyEvent.VK_T: 
-					case KeyEvent.VK_U: case KeyEvent.VK_V: case KeyEvent.VK_W: case KeyEvent.VK_X: case KeyEvent.VK_Y: 
-					case KeyEvent.VK_Z: case KeyEvent.VK_RIGHT:
-						e.consume();
-						break;
-					}
-				}
-			}
-		});
+		kunyomiTextField = new KjHiraganaTextField();
 		kunyomiTextField.setFont(new Font("MS Mincho", Font.PLAIN, 16));
 		kunyomiTextField.setBounds(27, 122, 170, 34);
-		contentPanel.add(kunyomiTextField);
 		kunyomiTextField.setColumns(10);
+		contentPanel.add(kunyomiTextField);
 		
-		onyomiTextField = new JTextField();
-		onyomiTextField.addKeyListener(new KeyAdapter() {
-			@Override
-			public void keyPressed(KeyEvent e) {
-				if ((!e.isControlDown()) && (!e.isAltDown())){
-					char c = e.getKeyChar();
-					if (('a'<=c) && (c<='z')){
-						c = (char) (c - 'a' + 'A');
-					}
-					switch (c){
-					case KeyEvent.VK_A: case KeyEvent.VK_B: case KeyEvent.VK_C: case KeyEvent.VK_D: case KeyEvent.VK_E: 
-					case KeyEvent.VK_F: case KeyEvent.VK_G: case KeyEvent.VK_H: case KeyEvent.VK_I: case KeyEvent.VK_J: 
-					case KeyEvent.VK_K: case KeyEvent.VK_L: case KeyEvent.VK_M: case KeyEvent.VK_N: case KeyEvent.VK_O: 
-					case KeyEvent.VK_P: case KeyEvent.VK_Q: case KeyEvent.VK_R: case KeyEvent.VK_S: case KeyEvent.VK_T: 
-					case KeyEvent.VK_U: case KeyEvent.VK_V: case KeyEvent.VK_W: case KeyEvent.VK_X: case KeyEvent.VK_Y: 
-					case KeyEvent.VK_Z: case KeyEvent.VK_RIGHT:
-						String text = onyomiTextField.getText() + e.getKeyChar();
-						onyomiTextField.setText(KjConverter.convertToKatakana(text.toLowerCase()));
-						e.consume();
-						break;
-					}
-				}
-			}
-			
-			public void keyTyped(KeyEvent e) {
-				if ((!e.isControlDown()) && (!e.isAltDown())){
-					char c = e.getKeyChar();
-					if (('a'<=c) && (c<='z')){
-						c = (char) (c - 'a' + 'A');
-					}
-					switch (c){
-					case KeyEvent.VK_A: case KeyEvent.VK_B: case KeyEvent.VK_C: case KeyEvent.VK_D: case KeyEvent.VK_E: 
-					case KeyEvent.VK_F: case KeyEvent.VK_G: case KeyEvent.VK_H: case KeyEvent.VK_I: case KeyEvent.VK_J: 
-					case KeyEvent.VK_K: case KeyEvent.VK_L: case KeyEvent.VK_M: case KeyEvent.VK_N: case KeyEvent.VK_O: 
-					case KeyEvent.VK_P: case KeyEvent.VK_Q: case KeyEvent.VK_R: case KeyEvent.VK_S: case KeyEvent.VK_T: 
-					case KeyEvent.VK_U: case KeyEvent.VK_V: case KeyEvent.VK_W: case KeyEvent.VK_X: case KeyEvent.VK_Y: 
-					case KeyEvent.VK_Z: case KeyEvent.VK_RIGHT:
-						e.consume();
-						break;
-					}
-				}
-			}
-		});
+		onyomiTextField = new KjKatakanaTextField();
 		onyomiTextField.setFont(new Font("MS Mincho", Font.PLAIN, 16));
 		onyomiTextField.setBounds(27, 184, 170, 34);
-		contentPanel.add(onyomiTextField);
 		onyomiTextField.setColumns(10);
+		contentPanel.add(onyomiTextField);
+		
 	}
 }

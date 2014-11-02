@@ -33,9 +33,21 @@ public class KjStroke {
 		return order;
 	}
 	
+	public KjStroke removeSamePoint(){
+		KjStroke result = new KjStroke();
+		result.addPoint(pointList.get(0));
+		for(int i=1;i<this.size()-1;i++){
+			if (pointList.get(i).distance(result.getPoint(result.size()-1))>5){
+				result.addPoint(pointList.get(i));
+			}
+		}
+		result.addPoint(pointList.get(pointList.size()-1));
+		return result;
+	}
+	
 	public KjStroke getSimplified(){
 		KjStroke result = new KjStroke();
-		KjStroke reduced = getReducedNoise();
+		KjStroke reduced = removeSamePoint();//getReducedNoise().removeSamePoint();
 		
 		if (reduced.size()<=2){
 			for(int i=0;i<reduced.size();i++){
@@ -76,12 +88,15 @@ public class KjStroke {
 			result.addPoint(reduced.getPoint(reduced.size()-1));
 		}
 		//if (result.size()!=this.size()){
-			return result;//.getSimplified2();
+			return result.removeSamePoint().getSimplified2(1);
 		//}
 		//return result;
 	}
 	
-	public KjStroke getSimplified2(){
+	private KjStroke getSimplified2(int times){
+		if (times == 0) {
+			return this;
+		}
 		KjStroke result = new KjStroke();
 		//KjStroke reduced = this;
 		
@@ -99,9 +114,10 @@ public class KjStroke {
 				p2 = this.getPoint(i);
 				p3 = this.getPoint(i3);
 				
-				double angle1 = Math.abs(Math.atan2(p2.y-p3.y, p2.x-p3.x));
-				double angle2 = Math.abs(Math.atan2(p1.y-p2.y, p1.x-p2.x));
-				double angle = Math.toDegrees(Math.abs(angle2 - angle1));
+				double angle1 = Math.atan2(p2.y-p3.y, p2.x-p3.x);
+				double angle2 = Math.atan2(p1.y-p2.y, p1.x-p2.x);
+				double angle = Math.abs(Math.toDegrees(angle2 - angle1));
+				angle = Math.min(angle, 360-angle);
 				if (angle>60){
 					i3 = i;
 					result.addPoint(p2);
@@ -109,7 +125,7 @@ public class KjStroke {
 			}
 			result.addPoint(this.getPoint(this.size()-1));
 		}
-		return result;
+		return result.getSimplified2(times-1);
 	}
 	
 	public KjStroke getReducedNoise(){
